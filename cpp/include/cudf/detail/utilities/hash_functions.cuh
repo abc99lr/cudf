@@ -244,9 +244,19 @@ struct IdentityHash
 
     CUDA_HOST_DEVICE_CALLABLE result_type operator()(const Key& key) const
     {
-      return static_cast<result_type>(key);
+      return static_cast<result_type>(0);
     }
 };
+
+template <>
+hash_value_type CUDA_HOST_DEVICE_CALLABLE IdentityHash<int64_t>::operator()(int64_t const& key) const {
+  return static_cast<hash_value_type>(key);
+}
+
+template <>
+hash_value_type CUDA_HOST_DEVICE_CALLABLE IdentityHash<int32_t>::operator()(int32_t const& key) const {
+  return static_cast<hash_value_type>(key);
+}
 
 /**
 * @brief Specialization of IdentityHash for wrapper structs that hashes the underlying value.
