@@ -27,7 +27,6 @@ dependencies:
   - ipython
   - recommonmark
   - pandoc=<2.0.0
-  - cudatoolkit=10.0
   - pip
   - partd
   - flake8

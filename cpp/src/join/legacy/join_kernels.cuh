@@ -377,7 +377,8 @@ __global__ void probe_hash_table( multimap_type multi_map,
           output_offset = atomicAdd( current_idx, current_idx_shared[warp_id] );
         }
 
-        output_offset = cub::ShuffleIndex(output_offset, 0, warp_size, activemask);
+        output_offset = cub::ShuffleIndex<warp_size>(output_offset, 0, activemask);
+
 
         for ( int shared_out_idx = lane_id; shared_out_idx<current_idx_shared[warp_id]; shared_out_idx+=num_threads ) 
         {
@@ -414,7 +415,7 @@ __global__ void probe_hash_table( multimap_type multi_map,
         output_offset = atomicAdd( current_idx, current_idx_shared[warp_id] );
       }
         
-      output_offset = cub::ShuffleIndex(output_offset, 0, warp_size, activemask);
+      output_offset = cub::ShuffleIndex<warp_size>(output_offset, 0, activemask);
 
       for ( int shared_out_idx = lane_id; shared_out_idx<current_idx_shared[warp_id]; shared_out_idx+=num_threads ) 
       {
