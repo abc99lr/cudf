@@ -467,6 +467,30 @@ public:
         return GDF_SUCCESS;
     }
     
+    gdf_error set_access_by( const int dev_id )
+    {
+        cudaPointerAttributes hashtbl_values_ptr_attributes;
+        cudaError_t status = cudaPointerGetAttributes( &hashtbl_values_ptr_attributes, m_hashtbl_values );
+    
+        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.isManaged ) {
+            CUDA_TRY( cudaMemAdvise(m_hashtbl_values, m_hashtbl_size*sizeof(value_type), cudaMemAdviseSetAccessedBy, dev_id) );
+        }
+        return GDF_SUCCESS;
+    }
+
+    gdf_error prefetch_part( const int dev_id, int prefetch_size, int offset, cudaStream_t stream = 0 )
+    {
+        cudaPointerAttributes hashtbl_values_ptr_attributes;
+        cudaError_t status = cudaPointerGetAttributes( &hashtbl_values_ptr_attributes, m_hashtbl_values );
+    
+        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.isManaged ) {
+            CUDA_TRY( cudaMemAdvise(m_hashtbl_values + offset, prefetch_size*sizeof(value_type), cudaMemAdviseSetPreferredLocation, dev_id) );
+            CUDA_TRY( cudaMemPrefetchAsync(m_hashtbl_values + offset, prefetch_size*sizeof(value_type), dev_id, stream) );
+        }
+        CUDA_TRY( cudaMemPrefetchAsync(this, sizeof(*this), dev_id, stream) );
+        return GDF_SUCCESS;
+    }
+
 private:
     const hasher            m_hf;
     const key_equal         m_equal;
