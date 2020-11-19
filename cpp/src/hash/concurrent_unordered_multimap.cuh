@@ -93,7 +93,7 @@ public:
             cudaPointerAttributes hashtbl_values_ptr_attributes;
             cudaError_t status = cudaPointerGetAttributes( &hashtbl_values_ptr_attributes, m_hashtbl_values );
             
-            if ( cudaSuccess == status && hashtbl_values_ptr_attributes.isManaged ) {
+            if ( cudaSuccess == status && hashtbl_values_ptr_attributes.type == cudaMemoryTypeManaged ) {
                 int dev_id = 0;
                 CUDA_RT_CALL( cudaGetDevice( &dev_id ) );
                 CUDA_RT_CALL( cudaMemPrefetchAsync(m_hashtbl_values, m_hashtbl_size*sizeof(value_type), dev_id, 0) );
@@ -460,7 +460,7 @@ public:
         cudaPointerAttributes hashtbl_values_ptr_attributes;
         cudaError_t status = cudaPointerGetAttributes( &hashtbl_values_ptr_attributes, m_hashtbl_values );
         
-        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.isManaged ) {
+        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.type == cudaMemoryTypeManaged ) {
             CUDA_TRY( cudaMemPrefetchAsync(m_hashtbl_values, m_hashtbl_size*sizeof(value_type), dev_id, stream) );
         }
         CUDA_TRY( cudaMemPrefetchAsync(this, sizeof(*this), dev_id, stream) );
@@ -472,7 +472,7 @@ public:
         cudaPointerAttributes hashtbl_values_ptr_attributes;
         cudaError_t status = cudaPointerGetAttributes( &hashtbl_values_ptr_attributes, m_hashtbl_values );
     
-        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.isManaged ) {
+        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.type == cudaMemoryTypeManaged ) {
             CUDA_TRY( cudaMemAdvise(m_hashtbl_values, m_hashtbl_size*sizeof(value_type), cudaMemAdviseSetAccessedBy, dev_id) );
         }
         return GDF_SUCCESS;
@@ -483,7 +483,7 @@ public:
         cudaPointerAttributes hashtbl_values_ptr_attributes;
         cudaError_t status = cudaPointerGetAttributes( &hashtbl_values_ptr_attributes, m_hashtbl_values );
     
-        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.isManaged ) {
+        if ( cudaSuccess == status && hashtbl_values_ptr_attributes.type == cudaMemoryTypeManaged ) {
             CUDA_TRY( cudaMemAdvise(m_hashtbl_values + offset, prefetch_size*sizeof(value_type), cudaMemAdviseSetPreferredLocation, dev_id) );
             CUDA_TRY( cudaMemPrefetchAsync(m_hashtbl_values + offset, prefetch_size*sizeof(value_type), dev_id, stream) );
         }
